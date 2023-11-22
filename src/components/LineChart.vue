@@ -1,42 +1,22 @@
 <template>
-    <Line v-if="loaded" :data="chartData" :options="chartOptions" />
+  <apexchart
+    v-if="loaded"
+    type="area"
+    :options="chartOptions"
+    :series="chartSeries"
+    :height="dynamicHeight"
+  />
 </template>
 
 <script lang="ts">
-import { Line } from 'vue-chartjs'
-import 'chartjs-adapter-date-fns';
-import {
-  Chart as ChartJS,
-  registerables,
-  Title,
-  Tooltip,
-  Legend,
-  LineElement,
-  PointElement,
-  LineController,
-  CategoryScale,
-  LinearScale,
-  TimeScale // Importe TimeScale aqui
-} from 'chart.js'
-
-ChartJS.register(
-  Title,
-  Tooltip,
-  Legend,
-  LineElement,
-  PointElement,
-  LineController,
-  CategoryScale,
-  LinearScale,
-  TimeScale,
-  ...registerables,
-)
+import ptbr from 'apexcharts/dist/locales/pt-br.json'
+import VueApexCharts from 'vue3-apexcharts'
 
 export default {
   name: 'LineChart',
 
   components: {
-    Line
+    apexchart: VueApexCharts
   },
 
   props: {
@@ -45,49 +25,134 @@ export default {
       default: false,
       required: true
     },
-
     chartData: {
       type: Object,
-      default: () => ({}),
+      default: () => ({
+        labels: [],
+        close: [],
+        predClose: []
+      }),
       required: true
     }
   },
 
-  data: () => ({
-    chartOptions: {
-      responsive: true,
-      maintainAspectRatio: true,
-      scales: {
-        x: {
-          type: 'time',
-          time: {
-            unit: 'day',
-            tooltipFormat: 'MMM dd, yyyy',
+  computed: {
+    dynamicHeight() {
+      return window.innerHeight < 680 ? '350vh' : '600vh'
+    },
+
+    chartSeries() {
+      return [
+        { name: 'Real', data: this.chartData.close },
+        { name: 'Previsto', data: this.chartData.predClose }
+      ]
+    },
+
+    chartOptions() {
+      return {
+        chart: {
+          animations: {
+            enabled: true,
+            easing: 'easeinout',
+            speed: 800,
+            animateGradually: {
+              enabled: true,
+              delay: 80
+            }
           },
+          background: '#00000000',
+          defaultLocale: 'pt-br',
+          dropShadow: {
+            enabled: true,
+            top: 0,
+            left: 0,
+            blur: 3,
+            color: '#000',
+            opacity: 0.35
+          },
+          fontFamily: 'Nunito',
+          locales: [ptbr],
+          type: 'area'
         },
-      },
-      plugins: {
+        colors: ['#455A64', '#F50057'],
+        dataLabels: { enabled: false },
+        fill: {
+          colors: ['#455A64', '#F50057'],
+          opacity: 1.0,
+          type: 'gradient',
+          gradient: {
+            shade: 'dark',
+            type: 'vertical',
+            shadeIntensity: 1,
+            inverseColors: false,
+            opacityFrom: 0.1,
+            opacityTo: 0.0
+          }
+        },
+        forecastDataPoints: {
+          count: 1,
+          dashArray: 8
+        },
+        grid: {
+          show: true,
+          borderColor: '#90A4AE20',
+          strokeDashArray: 8
+        },
         legend: {
-          display: true,
-          position: 'bottom'
+          show: true,
+          position: 'bottom',
+          fontSize: '14px',
+          fontFamily: 'Nunito'
+        },
+        markers: {
+          size: 0,
+          strokeWidth: 0,
+          fillOpacity: 1,
+          shape: 'circle',
+          showNullDataPoints: true,
+          hover: {
+            size: 8
+          }
+        },
+        stroke: {
+          curve: 'smooth',
+          lineCap: 'round'
+        },
+        theme: {
+          mode: 'dark'
+        },
+        xaxis: {
+          type: 'datetime',
+          categories: this.chartData.labels,
+          labels: {
+            datetimeUTC: true,
+            datetimeFormatter: {
+              year: 'yyyy',
+              month: "MMM 'yy",
+              day: 'dd MMM',
+              hour: 'HH:mm'
+            }
+          },
+          axisBorder: { show: false },
+          axisTicks: { show: false },
+          title: {
+            text: 'Data'
+          }
+        },
+        yaxis: {
+          labels: {
+            formatter: (v: Number) =>
+              new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(v)
+          },
+          title: {
+            text: 'Preço de Fechamento'
+          }
         },
         tooltip: {
-          mode: 'index',
-          intersect: false
+          enabled: true
         }
-      },
-      elements: {
-        line: {
-          tension: 0.4 // This is to set the smoothness of the line
-        },
-        point: {
-          radius: 5 // To set the radius of the points
-        }
-      },
-      animation: {
-        duration: 1000, // general animation time
       }
     }
-  })
+  }
 }
 </script>

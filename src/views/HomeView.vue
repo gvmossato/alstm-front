@@ -1,49 +1,49 @@
 <template>
-  <main>
-    <div style="display: flex">
-      <h1>Previsão do Índice S&P 500 Utilizando Redes LSTM e Mecanismos de Atenção</h1>
-      <div v-if="loaded" :class="trendUp ? 'green' : 'red'">
-        Tendência de {{ trendUp ? 'Subida' : 'Queda' }}!
-        <br/>
-        <b>{{ trendUp ? 'COMPRAR' : 'VENDER' }}</b>
-      </div>
-
-    </div>
-    <LineChart :loaded="loaded" :chartData="chartData" />
-  </main>
+  <v-container>
+    <v-row>
+      <v-col cols="12" sm="9">
+        <h1>
+          <span>Previsão do Índice </span>
+          <span class="text-blue-grey-darken-2">S&P500 </span>
+          <span>Utilizando </span>
+          <span class="text-pink-accent-3">LSTM </span>
+          <span>e </span>
+          <span class="text-pink-accent-3">Mecanismos de Atenção </span>
+        </h1>
+      </v-col>
+      <v-col class="d-flex align-center" cols="12" sm="3">
+        <TrendCard :loaded="loaded" :trendUp="trendUp" />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col class="chart-container" cols="12">
+        <LineChart :loaded="loaded" :chartData="chartData" />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
-import axios from 'axios'
 import LineChart from '@/components/LineChart.vue'
+import TrendCard from '@/components/TrendCard.vue'
+import axios from 'axios'
 
 export default {
   name: 'HomeView',
   components: {
-    LineChart
+    LineChart,
+    TrendCard
   },
 
   data: () => ({
     loaded: false,
-    dataFetched: null,
-    trendUp: null,
+    dataFetched: [],
+    trendUp: false,
 
     chartData: {
       labels: [],
-      datasets: [
-        {
-          label: 'Close',
-          borderColor: '#f87979',
-          backgroundColor: 'transparent',
-          data: []
-        },
-        {
-          label: 'Predicted Close',
-          borderColor: '#0545f8',
-          backgroundColor: 'transparent',
-          data: []
-        }
-      ]
+      close: [],
+      predClose: []
     }
   }),
 
@@ -80,26 +80,20 @@ export default {
     updateChartData() {
       if (!this.dataFetched?.length || !this.loaded) return
 
-      const labels = this.dataFetched.map(({ value }) => value.date)
-      const close = this.dataFetched.map(({ value }) => value.close)
-      const predClose = this.dataFetched.map(({ value }) => value.pred_close)
-
       this.chartData = {
-        labels: labels,
-        datasets: [
-          { ...this.chartData.datasets[0], data: close },
-          { ...this.chartData.datasets[1], data: predClose }
-        ]
+        labels: this.dataFetched.map(({ value }) => value.date),
+        close: this.dataFetched.map(({ value }) => value.close ?? null),
+        predClose: this.dataFetched.map(({ value }) => value.pred_close)
       }
     },
 
     updateTrend() {
       if (!this.dataFetched?.length || !this.loaded) return
 
-      this.dataFetched.sort((a, b) => a.key - b.key)
+      const sorted = [...this.dataFetched].sort((a, b) => a.key - b.key)
+      const lastClose = sorted.at(-2).value.close
+      const lastPredClose = sorted.at(-1).value.pred_close
 
-      lastClose = this.dataFetched.at(-2).value.close
-      lastPredClose = this.dataFetched.at(-1).value.pred_close
       this.trendUp = lastPredClose >= lastClose
     }
   }
@@ -107,26 +101,7 @@ export default {
 </script>
 
 <style scoped>
-  .green {
-    width: 300px;
-    text-align: center;
-    margin: auto;
-    padding: 10px;
-    background: linear-gradient(135deg, rgb(0, 192, 80) 0%, rgb(8, 68, 0) 100%);
-    color: white;
-    border-radius: 10px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-  }
-
-  .red {
-    width: 300px;
-    text-align: center;
-    margin: auto;
-    padding: 10px;
-    background: linear-gradient(135deg, rgb(192, 0, 0) 0%, rgb(68, 0, 0) 100%);
-    color: white;
-    border-radius: 10px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-    margin-left: 30px;
-  }
+.v-container {
+  width: 100vw;
+}
 </style>
