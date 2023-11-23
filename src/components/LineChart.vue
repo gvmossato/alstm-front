@@ -6,6 +6,7 @@
     :series="chartSeries"
     :height="dynamicHeight"
   />
+  <v-range-slider v-model="sliderRange" :max="chartData.labels.length" min="0" step="5" />
 </template>
 
 <script lang="ts">
@@ -14,6 +15,11 @@ import VueApexCharts from 'vue3-apexcharts'
 
 export default {
   name: 'LineChart',
+
+  data: () => ({
+    sliderRange: [0, 0],
+    initialHorizon: 40
+  }),
 
   components: {
     apexchart: VueApexCharts
@@ -36,15 +42,36 @@ export default {
     }
   },
 
+  watch: {
+    chartData() {
+      this.sliderRange = [
+        this.chartData.labels.length - this.initialHorizon,
+        this.chartData.labels.length
+      ]
+    }
+  },
+
   computed: {
     dynamicHeight() {
       return window.innerHeight < 680 ? '350vh' : '600vh'
     },
 
+    maxSliderValue() {
+      return this.chartData.labels.length
+    },
+
+    filteredChartData() {
+      return {
+        labels: this.chartData.labels.slice(...this.sliderRange),
+        close: this.chartData.close.slice(...this.sliderRange),
+        predClose: this.chartData.predClose.slice(...this.sliderRange)
+      }
+    },
+
     chartSeries() {
       return [
-        { name: 'Real', data: this.chartData.close },
-        { name: 'Previsto', data: this.chartData.predClose }
+        { name: 'Real', data: this.filteredChartData.close },
+        { name: 'Previsto', data: this.filteredChartData.predClose }
       ]
     },
 
@@ -52,13 +79,7 @@ export default {
       return {
         chart: {
           animations: {
-            enabled: true,
-            easing: 'easeinout',
-            speed: 800,
-            animateGradually: {
-              enabled: true,
-              delay: 80
-            }
+            enabled: false
           },
           background: '#00000000',
           defaultLocale: 'pt-br',
@@ -123,7 +144,7 @@ export default {
         },
         xaxis: {
           type: 'datetime',
-          categories: this.chartData.labels,
+          categories: this.chartData.labels.slice(...this.sliderRange),
           labels: {
             datetimeUTC: true,
             datetimeFormatter: {
