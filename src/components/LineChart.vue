@@ -6,7 +6,13 @@
     :series="chartSeries"
     :height="dynamicHeight"
   />
-  <v-range-slider v-model="sliderRange" :max="chartData.labels.length" min="0" step="5" />
+  <v-range-slider
+    v-model="sliderRange"
+    :max="chartData.labels.length"
+    min="0"
+    step="5"
+    prepend-icon="mdi-calendar-expand-horizontal"
+  />
 </template>
 
 <script lang="ts">
