@@ -1,46 +1,61 @@
-# alstm-front
 
-This template should help get you started developing with Vue 3 in Vite.
+<br />
 
-## Recommended IDE Setup
+<p align="center">
+  <img src="./misc/alstm-logo-pink.svg" alt="alstm-logo" width="550px" />
+</p>
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+<p align="center">  
+  <a href="https://vuetifyjs.com/en/">
+    <img src="https://img.shields.io/badge/Vuetify%203.4.2-1867C0?style=for-the-badge&logo=vuetify&logoColor=AEDDFF" alt="vuetify-badge" />
+  </a>
+  <a href="https://www.typescriptlang.org/">
+    <img src="https://img.shields.io/badge/typescript%205.2.0-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white" alt="typescript-badge" />
+  </a>
+  <a href="https://www.ibm.com/products/cloudant">
+    <img src="https://img.shields.io/badge/IBM%20Cloudant-1261FE?style=for-the-badge&logo=IBM%20Cloud&logoColor=white" alt="python-badge" />
+  </a>
+</p>
 
-## Type Support for `.vue` Imports in TS
+<br />
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+<p align="center">$${\color[rgb]{0.38,0,0.13}\text{\Large Previsão do Índice S\&P 500 Utilizando LSTM e Mecanismos de Atenção}}$$</p>
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+<p align="center">
+Aplicação web do projeto desenvolvido como <b>Trabalho de Conclusão de Curso</b> durante o último ano de graduação em <b>Engenharia Mecatrônica</b> na Escola Politécnica da Universidade de São Paulo (EP-USP)
+</p>
 
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+## 📜 Sobre
 
-## Customize configuration
+Repositório complementar, dedicado à hospedagem da aplicação web frontend desenvolvida para facilitar o acesso e a utilização do modelo preditivo por usuários não necessariamente familiarizados com programação.
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+> [!IMPORTANT]
+> 🧠 **[Visite o repositório principal](https://github.com/gvmossato/alstm-stock-market)**
 
-## Project Setup
+## 🌎 Aplicação
 
-```sh
-npm install
-```
+Com os dados hospedados no IBM Cloudant (banco NoSQL), o deploy da interface foi no GitHub Pages, sendo essa desenhada para fornecer da maneira mais direta possível as recomendações da rede.
 
-### Compile and Hot-Reload for Development
+<img src="./misc/app-preview.gif" alt="app-preview" />
 
-```sh
-npm run dev
-```
+Assim, um usuário poderia verificar todo o histórico de previsões do modelo e compará-las com o índice de fato. Além disso, ainda contava com a recomendação de compra ou venda segundo o modelo naquele momento, tendo em vista a previsão da rede para o preço de fechamento do dia seguinte.
 
-### Type-Check, Compile and Minify for Production
+Do ponto de vista operacional, a rede era executada automaticamente uma vez por dia próximo ao horário de fechamento do mercado para que um investidor pudesse ter a previsão mais fidedigna possível, mas ainda possuindo tempo hábil para operar.
 
-```sh
-npm run build
-```
+Como o modelo foi treinado inicialmente com dados disponíveis até a data limite de 18/08/2021, afim de permitir conjuntos de validação e teste, iniciou-se com o deploy da aplicação um processo de treinamentos incrementais.
 
-### Lint with [ESLint](https://eslint.org/)
+Assim, como dito, diariamente o modelo realizava predições com os dados mais atuais disponíveis, mas antes, uma vez que constatasse que o último treinamento havia ocorrido há pelo menos um semestre atrás (aproximadamente o batch size em dias úteis), automaticamente executava a rotina de treinamento incremental.
 
-```sh
-npm run lint
-```
+Essa metodologia permitiu ao modelo incorporar sempre novas tendências de mercado e não ficar apenas enviesado nos padrões observados antigamente. Até ser retirado do ar, o modelo passou por 5 treinamentos incrementais, cada um com 15 epochs.
+
+Aqui está a tabela em Markdown conforme solicitado:
+
+| \# | Evento                                                      | Data          |
+|----|-------------------------------------------------------------|---------------|
+| 1  | Deploy do modelo (conhecimento até 18/08/2021)              | 23/11/2023    |
+| 2  | Novo treinamento incremental (apenas com dados adicionais)  | 22/02/2022    |
+| 3  | Novo treinamento incremental (apenas com dados adicionais)  | 23/08/2022    |
+| 4  | Novo treinamento incremental (apenas com dados adicionais)  | 27/02/2023    |
+| 5  | Novo treinamento incremental (apenas com dados adicionais)  | 28/08/2023    |
+| 6  | Novo treinamento incremental (apenas com dados adicionais)  | 29/02/2024    |
+| 7  | Desligamento do modelo                                      | 16/04/2024    |
